@@ -22,9 +22,7 @@ export function sleep(ms: number) {
 function debounceCutm(fun: () => void, delay: number) {
   let timerId;
   clearTimeout(timerId);
-  timerId = setTimeout(() => {
-    fun();
-  }, delay);
+  timerId = setTimeout(fun, delay);
 }
 
 function App() {
@@ -51,32 +49,40 @@ function App() {
       setScoreState(scoreState + 1);
     }
   }, [score.current]);
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      window.addEventListener("keydown", (key) => {
+        let keyy = key.keyCode;
+        switch (keyy) {
+          case (keyy = 40):
+            if (togo.current !== "down") {
+              togo.current = "up";
+            }
+            break;
+          case (keyy = 39):
+            if (togo.current !== "right") {
+              togo.current = "left";
+            }
+            break;
+          case (keyy = 38):
+            if (togo.current !== "up") {
+              togo.current = "down";
+            }
+            break;
+          case (keyy = 37):
+            if (togo.current !== "left") {
+              togo.current = "right";
+            }
+            break;
+        }
+      });
+    };
+    window.addEventListener("keydown", handleKeyDown);
 
-  window.addEventListener("keydown", (key) => {
-    let keyy = key.keyCode;
-    switch (keyy) {
-      case (keyy = 40):
-        if (togo.current !== "down") {
-          togo.current = "up";
-        }
-        break;
-      case (keyy = 39):
-        if (togo.current !== "right") {
-          togo.current = "left";
-        }
-        break;
-      case (keyy = 38):
-        if (togo.current !== "up") {
-          togo.current = "down";
-        }
-        break;
-      case (keyy = 37):
-        if (togo.current !== "left") {
-          togo.current = "right";
-        }
-        break;
-    }
-  });
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
 
   function drawRoundedRect(
     pointx: number,
@@ -88,7 +94,13 @@ function App() {
     ctx.current?.beginPath();
     ctx.current?.moveTo(pointx + radius, pointy);
     ctx.current?.lineTo(pointx + width - radius, pointy);
-    ctx.current?.arcTo(pointx + width, pointy, pointx + width, pointy + radius, radius);
+    ctx.current?.arcTo(
+      pointx + width,
+      pointy,
+      pointx + width,
+      pointy + radius,
+      radius
+    );
     ctx.current?.lineTo(pointx + width, pointy + height - radius);
     ctx.current?.arcTo(
       pointx + width,
@@ -98,7 +110,13 @@ function App() {
       radius
     );
     ctx.current?.lineTo(pointx + radius, pointy + height);
-    ctx.current?.arcTo(pointx, pointy + height, pointx, pointy + height - radius, radius);
+    ctx.current?.arcTo(
+      pointx,
+      pointy + height,
+      pointx,
+      pointy + height - radius,
+      radius
+    );
     ctx.current?.lineTo(pointx, pointy + radius);
     ctx.current?.arcTo(pointx, pointy, pointx + radius, pointy, radius);
     ctx.current?.closePath();
@@ -109,8 +127,6 @@ function App() {
   }
 
   const CanvasComponent = () => {
-    let x = snakeCodi.current.x;
-    let y = snakeCodi.current.y;
     let width = 40;
     let height = 15;
     const color = "black";
@@ -125,108 +141,166 @@ function App() {
     }, [togo.current]);
 
     async function animate() {
-      await sleep(10);
-      if (ctx.current) {
-        const canvas = canvasRef.current;
-        ctx.current?.clearRect(0, 0, canvas?.width ?? 0, canvas?.height ?? 0);
-        drawRoundedRect(pointerXY.current.x, pointerXY.current.y, 20, 20, 20);
-        switch (togo.current) {
-          case "left":
-            width = 40;
-            height = 15;
-            if (x >= 700) {
-              x = x - 700;
-            } else if (y >= 500) {
-              y = y - 500;
-            } else {
-              x += 2;
-            }
-            break;
-          case "right":
-            width = 40;
-            height = 15;
-            if (x <= 0) {
-              x = 700;
-            } else if (y <= 0) {
-              y = 500;
-            } else {
-              x -= 2;
-            }
-            break;
-          case "up":
-            height = 40;
-            width = 15;
-            if (x >= 700) {
-              x = x - 700;
-            } else if (y >= 500) {
-              y = y - 500;
-            } else {
-              y += 2;
-            }
-            break;
-          case "down":
-            height = 40;
-            width = 15;
-            if (x <= 0) {
-              x = 700;
-            } else if (y <= 0) {
-              y = 500;
-            } else {
-              y -= 2;
-            }
-            break;
+      await sleep(scoreState === 0 ? 10 : 30 * scoreState).then(() => {
+        if (ctx.current) {
+          const canvas = canvasRef.current;
+          ctx.current?.clearRect(0, 0, canvas?.width ?? 0, canvas?.height ?? 0);
+          drawRoundedRect(pointerXY.current.x, pointerXY.current.y, 20, 20, 20);
+          switch (togo.current) {
+            case "left":
+              width = 40;
+              height = 15;
+              if (snakeCodi.current.x >= 700) {
+                snakeCodi.current.x = snakeCodi.current.x - 700;
+              } else if (snakeCodi.current.y >= 500) {
+                snakeCodi.current.y = snakeCodi.current.y - 500;
+              } else {
+                snakeCodi.current.x += 2;
+              }
+              break;
+            case "right":
+              width = 40;
+              height = 15;
+              if (snakeCodi.current.x <= 0) {
+                snakeCodi.current.x = 700;
+              } else if (snakeCodi.current.y <= 0) {
+                snakeCodi.current.y = 500;
+              } else {
+                snakeCodi.current.x -= 2;
+              }
+              break;
+            case "up":
+              height = 40;
+              width = 15;
+              if (snakeCodi.current.x >= 700) {
+                snakeCodi.current.x = snakeCodi.current.x - 700;
+              } else if (snakeCodi.current.y >= 500) {
+                snakeCodi.current.y = snakeCodi.current.y - 500;
+              } else {
+                snakeCodi.current.y += 2;
+              }
+              break;
+            case "down":
+              height = 40;
+              width = 15;
+              if (snakeCodi.current.x <= 0) {
+                snakeCodi.current.x = 700;
+              } else if (snakeCodi.current.y <= 0) {
+                snakeCodi.current.y = 500;
+              } else {
+                snakeCodi.current.y -= 2;
+              }
+              break;
+          }
+
+          if (ctx.current && ctx.current.fillStyle) {
+            ctx.current.fillStyle = color;
+          }
+
+          let checkforX =
+            snakeCodi.current.x === pointerXY.current.x ||
+            snakeCodi.current.x === pointerXY.current.x + 1 ||
+            snakeCodi.current.x === pointerXY.current.x + 2 ||
+            snakeCodi.current.x === pointerXY.current.x + 3 ||
+            snakeCodi.current.x === pointerXY.current.x + 4 ||
+            snakeCodi.current.x === pointerXY.current.x + 5 ||
+            snakeCodi.current.x === pointerXY.current.x + 6 ||
+            snakeCodi.current.x === pointerXY.current.x + 7 ||
+            snakeCodi.current.x === pointerXY.current.x + 8 ||
+            snakeCodi.current.x === pointerXY.current.x + 9 ||
+            snakeCodi.current.x === pointerXY.current.x + 10 ||
+            snakeCodi.current.x === pointerXY.current.x + 11 ||
+            snakeCodi.current.x === pointerXY.current.x + 12 ||
+            snakeCodi.current.x === pointerXY.current.x + 13 ||
+            snakeCodi.current.x === pointerXY.current.x + 14 ||
+            snakeCodi.current.x === pointerXY.current.x + 15 ||
+            snakeCodi.current.x === pointerXY.current.x + 16 ||
+            snakeCodi.current.x === pointerXY.current.x + 17 ||
+            snakeCodi.current.x === pointerXY.current.x + 18 ||
+            snakeCodi.current.x === pointerXY.current.x + 19 ||
+            snakeCodi.current.x === pointerXY.current.x - 1 ||
+            snakeCodi.current.x === pointerXY.current.x - 2 ||
+            snakeCodi.current.x === pointerXY.current.x - 4 ||
+            snakeCodi.current.x === pointerXY.current.x - 5 ||
+            snakeCodi.current.x === pointerXY.current.x - 6 ||
+            snakeCodi.current.x === pointerXY.current.x - 7 ||
+            snakeCodi.current.x === pointerXY.current.x - 8 ||
+            snakeCodi.current.x === pointerXY.current.x - 9 ||
+            snakeCodi.current.x === pointerXY.current.x - 3 ||
+            snakeCodi.current.x === pointerXY.current.x - 10 ||
+            snakeCodi.current.x === pointerXY.current.x - 11 ||
+            snakeCodi.current.x === pointerXY.current.x - 12 ||
+            snakeCodi.current.x === pointerXY.current.x - 14 ||
+            snakeCodi.current.x === pointerXY.current.x - 15 ||
+            snakeCodi.current.x === pointerXY.current.x - 16 ||
+            snakeCodi.current.x === pointerXY.current.x - 17 ||
+            snakeCodi.current.x === pointerXY.current.x - 18 ||
+            snakeCodi.current.x === pointerXY.current.x - 19 ||
+            snakeCodi.current.x === pointerXY.current.x - 13;
+
+          let checkforY =
+            snakeCodi.current.y === pointerXY.current.y ||
+            snakeCodi.current.y === pointerXY.current.y + 1 ||
+            snakeCodi.current.y === pointerXY.current.y + 2 ||
+            snakeCodi.current.y === pointerXY.current.y + 3 ||
+            snakeCodi.current.y === pointerXY.current.y + 4 ||
+            snakeCodi.current.y === pointerXY.current.y + 5 ||
+            snakeCodi.current.y === pointerXY.current.y + 6 ||
+            snakeCodi.current.y === pointerXY.current.y + 7 ||
+            snakeCodi.current.y === pointerXY.current.y + 8 ||
+            snakeCodi.current.y === pointerXY.current.y + 9 ||
+            snakeCodi.current.y === pointerXY.current.y - 1 ||
+            snakeCodi.current.y === pointerXY.current.y - 2 ||
+            snakeCodi.current.y === pointerXY.current.y - 4 ||
+            snakeCodi.current.y === pointerXY.current.y - 5 ||
+            snakeCodi.current.y === pointerXY.current.y - 6 ||
+            snakeCodi.current.y === pointerXY.current.y - 7 ||
+            snakeCodi.current.y === pointerXY.current.y - 8 ||
+            snakeCodi.current.y === pointerXY.current.y - 9 ||
+            snakeCodi.current.y === pointerXY.current.y - 3 ||
+            snakeCodi.current.y === pointerXY.current.y + 11 ||
+            snakeCodi.current.y === pointerXY.current.y + 12 ||
+            snakeCodi.current.y === pointerXY.current.y + 13 ||
+            snakeCodi.current.y === pointerXY.current.y + 14 ||
+            snakeCodi.current.y === pointerXY.current.y + 15 ||
+            snakeCodi.current.y === pointerXY.current.y + 16 ||
+            snakeCodi.current.y === pointerXY.current.y + 17 ||
+            snakeCodi.current.y === pointerXY.current.y + 18 ||
+            snakeCodi.current.y === pointerXY.current.y + 19 ||
+            snakeCodi.current.y === pointerXY.current.y + 10 ||
+            snakeCodi.current.y === pointerXY.current.y - 10 ||
+            snakeCodi.current.y === pointerXY.current.y - 11 ||
+            snakeCodi.current.y === pointerXY.current.y - 12 ||
+            snakeCodi.current.y === pointerXY.current.y - 14 ||
+            snakeCodi.current.y === pointerXY.current.y - 15 ||
+            snakeCodi.current.y === pointerXY.current.y - 16 ||
+            snakeCodi.current.y === pointerXY.current.y - 17 ||
+            snakeCodi.current.y === pointerXY.current.y - 18 ||
+            snakeCodi.current.y === pointerXY.current.y - 19 ||
+            snakeCodi.current.y === pointerXY.current.y - 13;
+
+          if (
+            checkforX &&
+            checkforY &&
+            pointerXY.current.x !== 0 &&
+            pointerXY.current.y !== 0 &&
+            snakeCodi.current.x !== 0 &&
+            snakeCodi.current.y !== 0
+          ) {
+            score.current = score.current + 1;
+            debounceCutm(() => {
+              setScoreState(scoreState + 1);
+            }, 50);
+          }
+          ctx.current?.fillRect(
+            snakeCodi.current.x,
+            snakeCodi.current.y,
+            width,
+            height
+          );
         }
-
-        if (ctx.current && ctx.current.fillStyle) {
-          ctx.current.fillStyle = color;
-        }
-
-        let checkforX =
-          x === pointerXY.current.x ||
-          x === pointerXY.current.x + 1 ||
-          x === pointerXY.current.x + 2 ||
-          x === pointerXY.current.x + 3 ||
-          x === pointerXY.current.x + 4 ||
-          x === pointerXY.current.x + 5 ||
-          x === pointerXY.current.x + 6 ||
-          x === pointerXY.current.x - 1 ||
-          x === pointerXY.current.x - 2 ||
-          x === pointerXY.current.x - 4 ||
-          x === pointerXY.current.x - 5 ||
-          x === pointerXY.current.x - 6 ||
-          x === pointerXY.current.x - 3;
-
-        let checkforY =
-          y === pointerXY.current.y ||
-          y === pointerXY.current.y + 1 ||
-          y === pointerXY.current.y + 2 ||
-          y === pointerXY.current.y + 3 ||
-          y === pointerXY.current.y + 4 ||
-          y === pointerXY.current.y + 5 ||
-          y === pointerXY.current.y + 6 ||
-          y === pointerXY.current.y - 1 ||
-          y === pointerXY.current.y - 2 ||
-          y === pointerXY.current.y - 4 ||
-          y === pointerXY.current.y - 5 ||
-          y === pointerXY.current.y - 6 ||
-          y === pointerXY.current.y - 3;
-
-        if (
-          checkforX &&
-          checkforY &&
-          pointerXY.current.x !== 0 &&
-          pointerXY.current.y !== 0 &&
-          x !== 0 &&
-          y !== 0
-        ) {
-          score.current = score.current + 1;
-          debounceCutm(() => {
-            setScoreState(scoreState + 1)
-          }, 50);
-        }
-        ctx.current?.fillRect(x, y, width, height);
-      }
         requestAnimationFrame(animate);
+      });
     }
     return <canvas id="canvas" ref={canvasRef} width={700} height={500} />;
   };
