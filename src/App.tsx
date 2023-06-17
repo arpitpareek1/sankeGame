@@ -6,19 +6,6 @@ export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// export function debounce<T extends any[]>(
-//   func: (...args: T) => void,
-//   delay: number
-// ): DebouncedFunction<T> {
-//   let timerId: ReturnType<typeof setTimeout>;
-//   return function debounced(...args: T) {
-//     clearTimeout(timerId);
-//     timerId = setTimeout(() => {
-//       func(...args);
-//     }, delay);
-//   };
-// }
-
 function debounceCutm(fun: () => void, delay: number) {
   let timerId;
   clearTimeout(timerId);
