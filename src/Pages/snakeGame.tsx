@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import "../App.css";
-import { stateObject } from "../interface";
+import { stateObject } from "../interface/interface";
 
 export function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
